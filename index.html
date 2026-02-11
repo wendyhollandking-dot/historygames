@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline Challenge: American History 1870-1930</title>
+  <script src="scorm-api.js"></script>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: linear-gradient(180deg, #002868 0%, #001a4d 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+    
+    /* Decorative stars background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background-image: radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+                        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+                        radial-gradient(2px 2px at 50px 160px, rgba(255,255,255,0.3), transparent),
+                        radial-gradient(2px 2px at 90px 40px, rgba(255,255,255,0.2), transparent),
+                        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.3), transparent),
+                        radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.2), transparent);
+      background-repeat: repeat;
+      background-size: 200px 200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: normal;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header .subtitle {
+      color: #b8860b;
+      font-style: italic;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+    
+    .decorative-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .decorative-line::before,
+    .decorative-line::after {
+      content: '';
+      height: 2px;
+      width: 100px;
+      background: linear-gradient(90deg, transparent, #b8860b, transparent);
+    }
+    
+    .star-icon {
+      color: #b8860b;
+      font-size: 1.2rem;
+    }
+    
+    /* Score display */
+    .score-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 30px;
+      padding: 15px 30px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .score-item {
+      text-align: center;
+    }
+    
+    .score-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 5px;
+    }
+    
+    .score-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #b8860b;
+    }
+    
+    /* Game area */
+    .game-area {
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(184,134,11,0.3);
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 30px;
+    }
+    
+    /* Reference event card */
+    .reference-event {
+      background: linear-gradient(135deg, #8b0000 0%, #5c0000 100%);
+      border: 3px solid #b8860b;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    
+    .reference-label {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #b8860b;
+      color: #002868;
+      padding: 4px 20px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .reference-year {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #b8860b;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .reference-title {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    
+    .reference-description {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.8);
+      font-style: italic;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    /* Question prompt */
+    .question-prompt {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .question-prompt p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 10px;
+    }
+    
+    .mystery-event {
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: bold;
+      padding: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      border: 2px dashed rgba(184,134,11,0.5);
+    }
+    
+    /* Choice buttons */
+    .choices {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    
+    .choice-btn {
+      flex: 1;
+      max-width: 250px;
+      padding: 25px 30px;
+      border: 3px solid rgba(184,134,11,0.5);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .choice-btn:hover {
+      background: rgba(184,134,11,0.2);
+      border-color: #b8860b;
+      transform: translateY(-3px);
+    }
+    
+    .choice-btn .arrow {
+      font-size: 2rem;
+    }
+    
+    .choice-btn .label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.8;
+    }
+    
+    .choice-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .choice-btn.correct {
+      background: rgba(0, 100, 0, 0.4);
+      border-color: #228b22;
+    }
+    
+    .choice-btn.incorrect {
+      background: rgba(139, 0, 0, 0.4);
+      border-color: #8b0000;
+    }
+    
+    /* Result display */
+    .result-display {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+      padding: 25px;
+      border-radius: 12px;
+    }
+    
+    .result-display.show {
+      display: block;
+    }
+    
+    .result-display.correct {
+      background: rgba(0, 100, 0, 0.3);
+      border: 2px solid #228b22;
+    }
+    
+    .result-display.incorrect {
+      background: rgba(139, 0, 0, 0.3);
+      border: 2px solid #8b0000;
+    }
+    
+    .result-icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    
+    .result-text {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    
+    .result-explanation {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.6;
+    }
+    
+    .result-year {
+      font-weight: bold;
+      color: #b8860b;
+    }
+    
+    /* Next button */
+    .next-btn {
+      display: none;
+      margin: 30px auto 0;
+      padding: 15px 50px;
+      background: linear-gradient(135deg, #b8860b 0%, #8b6508 100%);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .next-btn.show {
+      display: block;
+    }
+    
+    .next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(184,134,11,0.4);
+    }
+    
+    /* Start screen */
+    .start-screen {
+      text-align: center;
+      padding: 60px 40px;
+    }
+    
+    .start-screen h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+    
+    .start-screen p {
+      color: rgba(255,255,255,0.8);
+      max-width: 500px;
+      margin: 0 auto 30px;
+      line-height: 1.8;
+    }
+    
+    .start-btn {
+      padding: 20px 60px;
+      background: linear-gradient(135deg, #b8860b 0%, #8b6508 100%);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(184,134,11,0.4);
+    }
+    
+    /* End screen */
+    .end-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 40px;
+    }
+    
+    .end-screen.show {
+      display: block;
+    }
+    
+    .final-score {
+      font-size: 5rem;
+      font-weight: bold;
+      color: #b8860b;
+      margin: 20px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .final-score span {
+      font-size: 2rem;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .grade-badge {
+      display: inline-block;
+      padding: 10px 40px;
+      background: linear-gradient(135deg, #b8860b 0%, #8b6508 100%);
+      border-radius: 30px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+    
+    .end-message {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      line-height: 1.8;
+    }
+    
+    .play-again-btn {
+      padding: 15px 40px;
+      background: transparent;
+      border: 2px solid #b8860b;
+      border-radius: 8px;
+      color: #b8860b;
+      font-family: inherit;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .play-again-btn:hover {
+      background: rgba(184,134,11,0.2);
+    }
+    
+    /* Progress bar */
+    .progress-container {
+      margin-bottom: 30px;
+    }
+    
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 8px;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #b8860b, #daa520);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    /* Leaderboard section */
+    .leaderboard-section {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .leaderboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .leaderboard-header h2 {
+      font-size: 1.3rem;
+      font-weight: normal;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    
+    .refresh-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 6px;
+      padding: 8px 16px;
+      color: rgba(255,255,255,0.7);
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .refresh-btn:hover {
+      border-color: #b8860b;
+      color: #b8860b;
+    }
+    
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .leaderboard-table th,
+    .leaderboard-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .leaderboard-table th {
+      color: rgba(255,255,255,0.5);
+      font-weight: normal;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+    }
+    
+    .leaderboard-table .rank {
+      width: 50px;
+      color: #b8860b;
+      font-weight: bold;
+    }
+    
+    .leaderboard-table .score-col {
+      text-align: right;
+      color: #b8860b;
+      font-weight: bold;
+    }
+    
+    .leaderboard-table tr.highlight {
+      background: rgba(184,134,11,0.15);
+    }
+    
+    /* Hide elements */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Header -->
+    <header class="header">
+      <h1>Timeline Challenge</h1>
+      <p class="subtitle">American History 1870–1930</p>
+      <div class="decorative-line">
+        <span class="star-icon">★</span>
+      </div>
+    </header>
+    
+    <!-- Score Bar -->
+    <div class="score-bar" id="scoreBar">
+      <div class="score-item">
+        <div class="score-label">Score</div>
+        <div class="score-value" id="currentScore">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">Streak</div>
+        <div class="score-value" id="currentStreak">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">Best Streak</div>
+        <div class="score-value" id="bestStreak">0</div>
+      </div>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-label">
+        <span>Progress</span>
+        <span id="progressText">Question 1 of 10</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+    </div>
+    
+    <!-- Game Area -->
+    <div class="game-area">
+      
+      <!-- Start Screen -->
+      <div class="start-screen" id="startScreen">
+        <h2>Test Your Knowledge of American History</h2>
+        <p>
+          You'll be shown a historical event with its year. Then you'll see another event 
+          and must decide: did it happen <strong>before</strong> or <strong>after</strong> 
+          the first event?
+        </p>
+        <p>
+          Build your streak by answering correctly. The longer your streak, the higher your score!
+        </p>
+        <button class="start-btn" onclick="startGame()">Begin Challenge</button>
+      </div>
+      
+      <!-- Game Screen -->
+      <div id="gameScreen" class="hidden">
+        
+        <!-- Reference Event -->
+        <div class="reference-event">
+          <span class="reference-label">Reference Event</span>
+          <div class="reference-year" id="refYear">1898</div>
+          <div class="reference-title" id="refTitle">Spanish-American War</div>
+          <div class="reference-description" id="refDescription">
+            The United States declared war on Spain, resulting in American acquisition of Puerto Rico, Guam, and the Philippines.
+          </div>
+        </div>
+        
+        <!-- Question -->
+        <div class="question-prompt">
+          <p>Did this event happen before or after?</p>
+          <div class="mystery-event" id="mysteryEvent">
+            Construction of the Brooklyn Bridge completed
+          </div>
+        </div>
+        
+        <!-- Choice Buttons -->
+        <div class="choices">
+          <button class="choice-btn" id="beforeBtn" onclick="makeGuess('before')">
+            <span class="arrow">←</span>
+            <span class="label">Before</span>
+          </button>
+          <button class="choice-btn" id="afterBtn" onclick="makeGuess('after')">
+            <span class="arrow">→</span>
+            <span class="label">After</span>
+          </button>
+        </div>
+        
+        <!-- Result Display -->
+        <div class="result-display" id="resultDisplay">
+          <div class="result-icon" id="resultIcon">✓</div>
+          <div class="result-text" id="resultText">Correct!</div>
+          <div class="result-explanation" id="resultExplanation">
+            The Brooklyn Bridge was completed in <span class="result-year">1883</span>, 
+            15 years before the Spanish-American War.
+          </div>
+        </div>
+        
+        <!-- Next Button -->
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+        
+      </div>
+      
+      <!-- End Screen -->
+      <div class="end-screen" id="endScreen">
+        <h2>Challenge Complete!</h2>
+        <div class="final-score">
+          <span id="finalScoreValue">85</span><span>%</span>
+        </div>
+        <div class="grade-badge" id="gradeBadge">History Scholar</div>
+        <p class="end-message" id="endMessage">
+          Excellent work! You demonstrated strong knowledge of American history from the Gilded Age through the Progressive Era.
+        </p>
+        <button class="play-again-btn" onclick="resetGame()">Play Again</button>
+        
+        <!-- Leaderboard -->
+        <div class="leaderboard-section">
+          <div class="leaderboard-header">
+            <h2>★ Honor Roll ★</h2>
+            <button class="refresh-btn" onclick="loadLeaderboard()">↻ Refresh</button>
+          </div>
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+              <tr>
+                <td class="rank">#1</td>
+                <td>Loading...</td>
+                <td class="score-col">--</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <script>
+    // ============================================
+    // HISTORICAL EVENTS DATABASE
+    // ============================================
+    const EVENTS = [
+      {
+        year: 1870,
+        title: "15th Amendment Ratified",
+        description: "Prohibited denying the right to vote based on race, color, or previous condition of servitude."
+      },
+      {
+        year: 1871,
+        title: "Great Chicago Fire",
+        description: "A devastating fire burned for three days, destroying much of the city and leaving 100,000 homeless."
+      },
+      {
+        year: 1876,
+        title: "Battle of Little Bighorn",
+        description: "Lakota, Northern Cheyenne, and Arapaho forces defeated the 7th Cavalry Regiment led by George Custer."
+      },
+      {
+        year: 1876,
+        title: "Alexander Graham Bell Patents the Telephone",
+        description: "Bell received the first patent for the telephone, revolutionizing communication."
+      },
+      {
+        year: 1877,
+        title: "End of Reconstruction",
+        description: "Federal troops withdrew from the South following the Compromise of 1877, ending the Reconstruction era."
+      },
+      {
+        year: 1879,
+        title: "Thomas Edison Demonstrates the Light Bulb",
+        description: "Edison publicly demonstrated his incandescent light bulb at Menlo Park, New Jersey."
+      },
+      {
+        year: 1881,
+        title: "President Garfield Assassinated",
+        description: "James A. Garfield was shot by Charles Guiteau and died 11 weeks later from his wounds."
+      },
+      {
+        year: 1882,
+        title: "Chinese Exclusion Act",
+        description: "Congress passed the first significant law restricting immigration, barring Chinese laborers."
+      },
+      {
+        year: 1883,
+        title: "Brooklyn Bridge Opens",
+        description: "After 14 years of construction, the Brooklyn Bridge opened as the longest suspension bridge in the world."
+      },
+      {
+        year: 1886,
+        title: "Statue of Liberty Dedicated",
+        description: "France's gift to America was dedicated in New York Harbor by President Grover Cleveland."
+      },
+      {
+        year: 1886,
+        title: "Haymarket Affair",
+        description: "A bombing at a labor rally in Chicago led to a trial that became a cause célèbre for the labor movement."
+      },
+      {
+        year: 1889,
+        title: "Oklahoma Land Rush",
+        description: "Nearly 50,000 settlers raced to claim land in the Unassigned Lands of Indian Territory."
+      },
+      {
+        year: 1890,
+        title: "Wounded Knee Massacre",
+        description: "U.S. Army soldiers killed hundreds of Lakota people at Wounded Knee Creek in South Dakota."
+      },
+      {
+        year: 1892,
+        title: "Ellis Island Opens",
+        description: "The federal immigration station opened, processing over 12 million immigrants over the next 62 years."
+      },
+      {
+        year: 1893,
+        title: "World's Columbian Exposition",
+        description: "Chicago hosted the World's Fair celebrating the 400th anniversary of Columbus's arrival."
+      },
+      {
+        year: 1896,
+        title: "Plessy v. Ferguson",
+        description: "Supreme Court upheld 'separate but equal' doctrine, legalizing racial segregation."
+      },
+      {
+        year: 1898,
+        title: "Spanish-American War",
+        description: "The U.S. declared war on Spain, gaining Puerto Rico, Guam, and the Philippines."
+      },
+      {
+        year: 1898,
+        title: "USS Maine Explosion",
+        description: "The battleship Maine exploded in Havana Harbor, helping spark the Spanish-American War."
+      },
+      {
+        year: 1901,
+        title: "President McKinley Assassinated",
+        description: "William McKinley was shot by anarchist Leon Czolgosz and died eight days later."
+      },
+      {
+        year: 1903,
+        title: "Wright Brothers' First Flight",
+        description: "Orville and Wilbur Wright achieved the first powered airplane flight at Kitty Hawk, North Carolina."
+      },
+      {
+        year: 1906,
+        title: "San Francisco Earthquake",
+        description: "A massive earthquake and subsequent fires destroyed much of San Francisco, killing over 3,000 people."
+      },
+      {
+        year: 1908,
+        title: "Ford Model T Introduced",
+        description: "Henry Ford introduced the affordable Model T, revolutionizing American transportation."
+      },
+      {
+        year: 1909,
+        title: "NAACP Founded",
+        description: "The National Association for the Advancement of Colored People was established in New York City."
+      },
+      {
+        year: 1911,
+        title: "Triangle Shirtwaist Factory Fire",
+        description: "A fire in a New York garment factory killed 146 workers, spurring labor safety reforms."
+      },
+      {
+        year: 1912,
+        title: "Titanic Sinks",
+        description: "The RMS Titanic struck an iceberg and sank on its maiden voyage, killing over 1,500 people."
+      },
+      {
+        year: 1913,
+        title: "Federal Reserve Created",
+        description: "Congress established the Federal Reserve System to provide the nation with a stable monetary system."
+      },
+      {
+        year: 1914,
+        title: "Panama Canal Opens",
+        description: "The canal connecting the Atlantic and Pacific oceans opened after a decade of American construction."
+      },
+      {
+        year: 1917,
+        title: "United States Enters World War I",
+        description: "Following German submarine attacks, the U.S. declared war and joined the Allied Powers."
+      },
+      {
+        year: 1918,
+        title: "Spanish Flu Pandemic Begins",
+        description: "The devastating influenza pandemic infected 500 million people worldwide, killing up to 50 million."
+      },
+      {
+        year: 1919,
+        title: "18th Amendment Ratified (Prohibition)",
+        description: "The Constitution was amended to ban the manufacture, sale, and transportation of alcohol."
+      },
+      {
+        year: 1920,
+        title: "19th Amendment Ratified",
+        description: "Women gained the right to vote after decades of suffrage activism."
+      },
+      {
+        year: 1920,
+        title: "First Commercial Radio Broadcast",
+        description: "KDKA in Pittsburgh broadcast the first commercial radio program, reporting election results."
+      },
+      {
+        year: 1921,
+        title: "Tulsa Race Massacre",
+        description: "A white mob attacked the prosperous Black neighborhood of Greenwood, killing hundreds."
+      },
+      {
+        year: 1924,
+        title: "Immigration Act of 1924",
+        description: "Congress severely restricted immigration through national origin quotas."
+      },
+      {
+        year: 1925,
+        title: "Scopes Trial",
+        description: "Tennessee teacher John Scopes was tried for teaching evolution, drawing national attention."
+      },
+      {
+        year: 1927,
+        title: "Lindbergh Crosses the Atlantic",
+        description: "Charles Lindbergh completed the first solo nonstop transatlantic flight in the Spirit of St. Louis."
+      },
+      {
+        year: 1928,
+        title: "First Mickey Mouse Cartoon",
+        description: "Walt Disney's Steamboat Willie premiered, introducing Mickey Mouse to audiences."
+      },
+      {
+        year: 1929,
+        title: "Stock Market Crash",
+        description: "Black Tuesday marked the beginning of the Great Depression as the stock market collapsed."
+      },
+      {
+        year: 1930,
+        title: "Smoot-Hawley Tariff",
+        description: "Congress raised tariffs to record levels, worsening the Great Depression."
+      }
+    ];
+    
+    // ============================================
+    // GAME STATE
+    // ============================================
+    let gameState = {
+      currentQuestion: 0,
+      totalQuestions: 10,
+      score: 0,
+      correct: 0,
+      streak: 0,
+      bestStreak: 0,
+      referenceEvent: null,
+      mysteryEvent: null,
+      usedEvents: [],
+      playerName: null
+    };
+    
+    // Demo leaderboard data
+    let leaderboardData = [
+      { name: "Thomas J.", score: 95 },
+      { name: "Eleanor R.", score: 90 },
+      { name: "Theodore", score: 85 },
+      { name: "Woodrow W.", score: 80 },
+      { name: "Calvin C.", score: 75 }
+    ];
+    
+    // ============================================
+    // GAME FUNCTIONS
+    // ============================================
+    
+    function startGame() {
+      // Reset state
+      gameState.currentQuestion = 0;
+      gameState.score = 0;
+      gameState.correct = 0;
+      gameState.streak = 0;
+      gameState.bestStreak = 0;
+      gameState.usedEvents = [];
+      
+      // Update UI
+      updateScoreDisplay();
+      updateProgress();
+      
+      // Show game screen
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('endScreen').classList.remove('show');
+      document.getElementById('gameScreen').classList.remove('hidden');
+      document.getElementById('scoreBar').classList.remove('hidden');
+      document.getElementById('progressContainer').classList.remove('hidden');
+      
+      // Load first question
+      loadQuestion();
+      
+      // Tell SCORM we've started
+      SCORM.setStatus('incomplete');
+    }
+    
+    function loadQuestion() {
+      // Reset UI state
+      document.getElementById('resultDisplay').classList.remove('show', 'correct', 'incorrect');
+      document.getElementById('nextBtn').classList.remove('show');
+      document.getElementById('beforeBtn').disabled = false;
+      document.getElementById('afterBtn').disabled = false;
+      document.getElementById('beforeBtn').classList.remove('correct', 'incorrect');
+      document.getElementById('afterBtn').classList.remove('correct', 'incorrect');
+      
+      // Pick two different events we haven't used
+      let availableEvents = EVENTS.filter((_, i) => !gameState.usedEvents.includes(i));
+      
+      if (availableEvents.length < 2) {
+        // Reset if we've used too many
+        gameState.usedEvents = [];
+        availableEvents = [...EVENTS];
+      }
+      
+      // Randomly select reference event
+      const refIndex = Math.floor(Math.random() * availableEvents.length);
+      gameState.referenceEvent = availableEvents[refIndex];
+      const refOriginalIndex = EVENTS.indexOf(gameState.referenceEvent);
+      gameState.usedEvents.push(refOriginalIndex);
+      
+      // Remove reference from available for mystery selection
+      availableEvents.splice(refIndex, 1);
+      
+      // Select mystery event (must be different year for clear answer)
+      let mysteryOptions = availableEvents.filter(e => e.year !== gameState.referenceEvent.year);
+      if (mysteryOptions.length === 0) mysteryOptions = availableEvents;
+      
+      const mystIndex = Math.floor(Math.random() * mysteryOptions.length);
+      gameState.mysteryEvent = mysteryOptions[mystIndex];
+      const mystOriginalIndex = EVENTS.indexOf(gameState.mysteryEvent);
+      gameState.usedEvents.push(mystOriginalIndex);
+      
+      // Update display
+      document.getElementById('refYear').textContent = gameState.referenceEvent.year;
+      document.getElementById('refTitle').textContent = gameState.referenceEvent.title;
+      document.getElementById('refDescription').textContent = gameState.referenceEvent.description;
+      document.getElementById('mysteryEvent').textContent = gameState.mysteryEvent.title;
+      
+      updateProgress();
+    }
+    
+    function makeGuess(guess) {
+      const correctAnswer = gameState.mysteryEvent.year < gameState.referenceEvent.year ? 'before' : 'after';
+      const isCorrect = guess === correctAnswer;
+      
+      // Disable buttons
+      document.getElementById('beforeBtn').disabled = true;
+      document.getElementById('afterBtn').disabled = true;
+      
+      // Highlight buttons
+      if (guess === 'before') {
+        document.getElementById('beforeBtn').classList.add(isCorrect ? 'correct' : 'incorrect');
+        if (!isCorrect) document.getElementById('afterBtn').classList.add('correct');
+      } else {
+        document.getElementById('afterBtn').classList.add(isCorrect ? 'correct' : 'incorrect');
+        if (!isCorrect) document.getElementById('beforeBtn').classList.add('correct');
+      }
+      
+      // Update score and streak
+      if (isCorrect) {
+        gameState.correct++;
+        gameState.streak++;
+        if (gameState.streak > gameState.bestStreak) {
+          gameState.bestStreak = gameState.streak;
+        }
+        // Bonus points for streaks
+        gameState.score += 10 + (gameState.streak - 1) * 2;
+      } else {
+        gameState.streak = 0;
+      }
+      
+      updateScoreDisplay();
+      
+      // Show result
+      const resultDisplay = document.getElementById('resultDisplay');
+      resultDisplay.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+      document.getElementById('resultIcon').textContent = isCorrect ? '✓' : '✗';
+      document.getElementById('resultText').textContent = isCorrect ? 'Correct!' : 'Not quite...';
+      
+      const yearDiff = Math.abs(gameState.mysteryEvent.year - gameState.referenceEvent.year);
+      const beforeAfter = gameState.mysteryEvent.year < gameState.referenceEvent.year ? 'before' : 'after';
+      document.getElementById('resultExplanation').innerHTML = `
+        <strong>${gameState.mysteryEvent.title}</strong> occurred in 
+        <span class="result-year">${gameState.mysteryEvent.year}</span>, 
+        ${yearDiff} year${yearDiff !== 1 ? 's' : ''} ${beforeAfter} ${gameState.referenceEvent.title}.
+      `;
+      
+      // Show next button
+      document.getElementById('nextBtn').classList.add('show');
+      
+      gameState.currentQuestion++;
+    }
+    
+    function nextQuestion() {
+      if (gameState.currentQuestion >= gameState.totalQuestions) {
+        endGame();
+      } else {
+        loadQuestion();
+      }
+    }
+    
+    function endGame() {
+      const percentage = Math.round((gameState.correct / gameState.totalQuestions) * 100);
+      
+      // Determine grade
+      let grade, message;
+      if (percentage >= 90) {
+        grade = "History Scholar";
+        message = "Outstanding! You have an exceptional knowledge of American history from this transformative era.";
+      } else if (percentage >= 80) {
+        grade = "History Expert";
+        message = "Excellent work! You demonstrated strong knowledge of American history from the Gilded Age through the Progressive Era.";
+      } else if (percentage >= 70) {
+        grade = "History Student";
+        message = "Good job! You have a solid foundation in American history. Keep studying to improve your timeline knowledge.";
+      } else if (percentage >= 60) {
+        grade = "History Apprentice";
+        message = "You're learning! Review the major events of this period to strengthen your understanding.";
+      } else {
+        grade = "History Beginner";
+        message = "This era had many important events. Consider reviewing the material and try again!";
+      }
+      
+      // Update end screen
+      document.getElementById('finalScoreValue').textContent = percentage;
+      document.getElementById('gradeBadge').textContent = grade;
+      document.getElementById('endMessage').textContent = message;
+      
+      // Show end screen
+      document.getElementById('gameScreen').classList.add('hidden');
+      document.getElementById('endScreen').classList.add('show');
+      
+      // Report to SCORM
+      SCORM.setScore(percentage);
+      SCORM.complete(percentage);
+      
+      // Load leaderboard
+      loadLeaderboard();
+      
+      // Get player name for leaderboard
+      gameState.playerName = SCORM.getLearnerName();
+      if (gameState.playerName && gameState.playerName !== 'Learner') {
+        // Add to leaderboard (in real implementation, would submit to Google Form)
+        addToLeaderboard(gameState.playerName, percentage);
+      }
+    }
+    
+    function resetGame() {
+      document.getElementById('endScreen').classList.remove('show');
+      document.getElementById('startScreen').classList.remove('hidden');
+    }
+    
+    function updateScoreDisplay() {
+      document.getElementById('currentScore').textContent = gameState.score;
+      document.getElementById('currentStreak').textContent = gameState.streak;
+      document.getElementById('bestStreak').textContent = gameState.bestStreak;
+    }
+    
+    function updateProgress() {
+      const questionNum = Math.min(gameState.currentQuestion + 1, gameState.totalQuestions);
+      document.getElementById('progressText').textContent = 
+        `Question ${questionNum} of ${gameState.totalQuestions}`;
+      document.getElementById('progressFill').style.width = 
+        `${(gameState.currentQuestion / gameState.totalQuestions) * 100}%`;
+    }
+    
+    // ============================================
+    // LEADERBOARD FUNCTIONS
+    // ============================================
+    
+    function loadLeaderboard() {
+      const tbody = document.getElementById('leaderboardBody');
+      
+      // Sort by score
+      const sorted = [...leaderboardData].sort((a, b) => b.score - a.score);
+      
+      tbody.innerHTML = sorted.map((entry, i) => {
+        const isPlayer = entry.name === gameState.playerName;
+        return `
+          <tr class="${isPlayer ? 'highlight' : ''}">
+            <td class="rank">#${i + 1}</td>
+            <td>${entry.name}${isPlayer ? ' (You)' : ''}</td>
+            <td class="score-col">${entry.score}%</td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    function addToLeaderboard(name, score) {
+      // Check if player already exists
+      const existing = leaderboardData.find(e => e.name === name);
+      if (existing) {
+        // Update if new score is higher
+        if (score > existing.score) {
+          existing.score = score;
+        }
+      } else {
+        leaderboardData.push({ name, score });
+      }
+    }
+    
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    
+    window.addEventListener('load', function() {
+      // Hide game elements initially
+      document.getElementById('gameScreen').classList.add('hidden');
+      document.getElementById('scoreBar').classList.add('hidden');
+      document.getElementById('progressContainer').classList.add('hidden');
+    });
+  </script>
+</body>
+</html>
