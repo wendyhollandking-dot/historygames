@@ -664,6 +664,59 @@
       background: rgba(218,165,32,0.15);
     }
 
+    /* Event timeline */
+    .timeline-section {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: left;
+    }
+
+    .timeline-section h2 {
+      font-size: 1.3rem;
+      font-weight: normal;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .timeline-list {
+      list-style: none;
+      padding: 0;
+      position: relative;
+      margin-left: 60px;
+      border-left: 2px solid rgba(218,165,32,0.4);
+    }
+
+    .timeline-list li {
+      padding: 8px 0 8px 20px;
+      position: relative;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .timeline-list li::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 14px;
+      width: 10px;
+      height: 10px;
+      background: #daa520;
+      border-radius: 50%;
+    }
+
+    .timeline-year {
+      position: absolute;
+      left: -60px;
+      width: 40px;
+      text-align: right;
+      color: #daa520;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
     /* Hide elements */
     .hidden {
       display: none !important;
@@ -801,6 +854,12 @@
           Excellent work! You demonstrated strong knowledge of American history from the Gilded Age through the Jazz Age.
         </p>
         <button class="play-again-btn" onclick="resetGame()">Play Again</button>
+
+        <!-- Event Timeline -->
+        <div class="timeline-section" id="timelineSection">
+          <h2>Your Events in Order</h2>
+          <ul class="timeline-list" id="timelineList"></ul>
+        </div>
 
         <!-- Name Prompt -->
         <div class="name-prompt" id="namePrompt">
@@ -1143,6 +1202,7 @@
       referenceEvent: null,
       mysteryEvent: null,
       usedEvents: [],
+      seenEvents: [],
       playerName: null
     };
 
@@ -1175,6 +1235,7 @@
       gameState.streak = 0;
       gameState.bestStreak = 0;
       gameState.usedEvents = [];
+      gameState.seenEvents = [];
 
       // Update UI
       updateScoreDisplay();
@@ -1232,6 +1293,10 @@
       gameState.mysteryEvent = mysteryOptions[mystIndex];
       const mystOriginalIndex = EVENTS.indexOf(gameState.mysteryEvent);
       gameState.usedEvents.push(mystOriginalIndex);
+
+      // Track seen events for end-of-game timeline
+      gameState.seenEvents.push({ year: gameState.referenceEvent.year, title: gameState.referenceEvent.title });
+      gameState.seenEvents.push({ year: gameState.mysteryEvent.year, title: gameState.mysteryEvent.title });
 
       // Update display
       document.getElementById('refYear').textContent = gameState.referenceEvent.year;
@@ -1340,6 +1405,18 @@
       document.getElementById('finalScoreValue').textContent = percentage;
       document.getElementById('gradeBadge').textContent = grade;
       document.getElementById('endMessage').textContent = message;
+
+      // Render timeline of seen events
+      var unique = [];
+      var seen = {};
+      gameState.seenEvents.forEach(function(e) {
+        var key = e.year + '|' + e.title;
+        if (!seen[key]) { seen[key] = true; unique.push(e); }
+      });
+      unique.sort(function(a, b) { return a.year - b.year; });
+      document.getElementById('timelineList').innerHTML = unique.map(function(e) {
+        return '<li><span class="timeline-year">' + e.year + '</span>' + e.title + '</li>';
+      }).join('');
 
       // Show end screen
       document.getElementById('gameScreen').classList.add('hidden');
