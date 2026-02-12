@@ -569,24 +569,61 @@
       text-transform: uppercase;
     }
 
-    .refresh-btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 6px;
-      padding: 8px 16px;
-      color: rgba(255,255,255,0.7);
+    .name-prompt {
+      margin-top: 30px;
+      padding: 25px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(218,165,32,0.3);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .name-prompt label {
+      display: block;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 12px;
+    }
+
+    .name-prompt input {
+      padding: 10px 16px;
       font-family: inherit;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
+      font-size: 1rem;
+      border: 2px solid rgba(218,165,32,0.5);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      width: 200px;
+      max-width: 100%;
     }
 
-    .refresh-btn:hover {
+    .name-prompt input:focus {
+      outline: none;
       border-color: #daa520;
-      color: #daa520;
+      background: rgba(255,255,255,0.15);
     }
 
-    .refresh-btn:focus-visible {
+    .name-prompt button {
+      margin-left: 10px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #886b10 0%, #6b5310 100%);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .name-prompt button:hover {
+      box-shadow: 0 4px 15px rgba(218,165,32,0.4);
+    }
+
+    .name-prompt button:focus-visible {
       outline: 3px solid #fff;
       outline-offset: 3px;
     }
@@ -765,11 +802,19 @@
         </p>
         <button class="play-again-btn" onclick="resetGame()">Play Again</button>
 
+        <!-- Name Prompt -->
+        <div class="name-prompt" id="namePrompt">
+          <label for="playerNameInput">Enter your name for the Honor Roll:</label>
+          <div>
+            <input type="text" id="playerNameInput" maxlength="30" placeholder="Your name">
+            <button onclick="submitName()">Submit</button>
+          </div>
+        </div>
+
         <!-- Leaderboard -->
-        <div class="leaderboard-section">
+        <div class="leaderboard-section hidden" id="leaderboardSection">
           <div class="leaderboard-header">
             <h2>&#9733; Honor Roll &#9733;</h2>
-            <button class="refresh-btn" onclick="loadLeaderboard()" aria-label="Refresh leaderboard">&#8635; Refresh</button>
           </div>
           <table class="leaderboard-table" aria-label="Leaderboard scores">
             <thead>
@@ -833,7 +878,7 @@
       },
       {
         year: 1877,
-        title: "Great Railroad Strike of 1877",
+        title: "Great Railroad Strike",
         description: "Railroad workers struck from Baltimore to St. Louis after rail lines slashed wages, shutting down the nation's economic lifeblood.",
         context: "The Great Railroad Strike of 1877 was the first major nationwide labor action in American history. After railroad companies slashed wages for the second time in a year, workers in city after city walked off the job, and the strike quickly spread across the country. Federal troops were called in to crush the strike, and nearly 100 Americans died in the violence. The event convinced many laborers of the need for organized, institutionalized labor unions."
       },
@@ -876,14 +921,14 @@
       {
         year: 1887,
         title: "Dawes General Allotment Act",
-        description: "Congress divided Native American reservations into individual family homesteads, with 'surplus' tribal lands sold to white settlers.",
-        context: "The Dawes Act was presented as humanitarian reform, but it devastated Native American communities. The law broke up communal tribal lands into 160-acre individual allotments, with remaining 'surplus' land sold to white settlers. As a result, Native peoples lost as much as eighty million acres of land. The act undermined tribal sovereignty and traditional ways of life, and its effects were not reversed until the Indian Reorganization Act of 1934."
+        description: "Congress divided Native American reservations into individual family homesteads, with 'surplus' tribal lands sold to White settlers.",
+        context: "The Dawes Act was presented as humanitarian reform, but it devastated Native American communities. The law broke up communal tribal lands into 160-acre individual allotments, with remaining 'surplus' land sold to White settlers. As a result, Native peoples lost as much as eighty million acres of land. The act undermined tribal sovereignty and traditional ways of life, and its effects were not reversed until the Indian Reorganization Act of 1934."
       },
       {
         year: 1889,
         title: "Oklahoma Land Rush",
         description: "Nearly 50,000 settlers raced to claim land in the Unassigned Lands of Indian Territory.",
-        context: "The Oklahoma Land Rush of 1889 was one of the most dramatic episodes of westward expansion. At the sound of a starting gun, thousands of settlers on horseback and in wagons raced to stake claims on nearly two million acres of land that had been designated Indian Territory. Those who sneaked in early to claim the best land were called 'Sooners.' The event reflected the federal government's ongoing policy of opening Native lands to white settlement."
+        context: "The Oklahoma Land Rush of 1889 was one of the most dramatic episodes of westward expansion. At the sound of a starting gun, thousands of settlers on horseback and in wagons raced to stake claims on nearly two million acres of land that had been designated Indian Territory. Those who sneaked in early to claim the best land were called 'Sooners.' The event reflected the federal government's ongoing policy of opening Native lands to White settlement."
       },
       {
         year: 1890,
@@ -1039,7 +1084,7 @@
         year: 1919,
         title: "Red Summer Race Riots",
         description: "Violent race riots erupted across America, including a major riot in Chicago triggered by the murder of a Black teenager.",
-        context: "The summer of 1919 saw race riots erupt in cities across the nation. In Chicago, a white mob stoned a young Black boy to death for swimming near the 'white beach' on Lake Michigan. The week-long riot that followed left 38 people dead and millions of dollars in damage. White soldiers returning from war sought to reassert racial dominance, while Black veterans returned determined to fight for their rights. The violence demonstrated that racial discrimination was a national\u2014not solely southern\u2014problem."
+        context: "The summer of 1919 saw race riots erupt in cities across the nation. In Chicago, a White mob stoned a young Black boy to death for swimming near the 'White beach' on Lake Michigan. The week-long riot that followed left 38 people dead and millions of dollars in damage. White soldiers returning from war sought to reassert racial dominance, while Black veterans returned determined to fight for their rights. The violence demonstrated that racial discrimination was a national\u2014not solely southern\u2014problem."
       },
       {
         year: 1920,
@@ -1056,14 +1101,14 @@
       {
         year: 1921,
         title: "Tulsa Race Massacre",
-        description: "A white mob attacked and destroyed the prosperous Black neighborhood of Greenwood, killing hundreds.",
-        context: "The Tulsa Race Massacre was the deadliest race massacre in American history. Greenwood, known as 'Black Wall Street,' was a thriving African American community. Spurred by a false accusation against a young Black man, a white mob destroyed over thirty square blocks, burning more than 1,000 homes. Survivors reported machine guns and planes dropping firebombs. Victims were buried in mass graves, and thousands of survivors were left homeless."
+        description: "A White mob attacked and destroyed the prosperous Black neighborhood of Greenwood, killing hundreds.",
+        context: "The Tulsa Race Massacre was the deadliest race massacre in American history. Greenwood, known as 'Black Wall Street,' was a thriving African American community. Spurred by a false accusation against a young Black man, a White mob destroyed over thirty square blocks, burning more than 1,000 homes. Survivors reported machine guns and planes dropping firebombs. Victims were buried in mass graves, and thousands of survivors were left homeless."
       },
       {
-        year: 1924,
-        title: "Immigration Act of 1924",
-        description: "Congress severely restricted immigration through national origin quotas.",
-        context: "The Immigration Act of 1924 dramatically curtailed immigration to the United States by establishing strict quotas based on national origin. The quotas heavily favored immigrants from Northern and Western Europe while virtually excluding people from Southern and Eastern Europe, Asia, and Africa. The act reflected the nativist sentiment and racial anxieties of the era, and it remained the basis of American immigration policy until 1965."
+        year: 1923,
+        title: "Teapot Dome Scandal",
+        description: "A bribery scandal in which the Secretary of the Interior secretly leased federal oil reserves to private companies.",
+        context: "The Teapot Dome Scandal was the most significant government corruption case of the early twentieth century. Secretary of the Interior Albert Fall secretly leased naval oil reserves at Teapot Dome, Wyoming, and Elk Hills, California, to private oil companies in exchange for cash and no-interest loans. When a Senate investigation exposed the scheme, Fall became the first former Cabinet member in American history to be sent to prison. The scandal tarnished the legacy of President Warren G. Harding and fueled public cynicism about government corruption during the Roaring Twenties."
       },
       {
         year: 1925,
@@ -1101,14 +1146,22 @@
       playerName: null
     };
 
-    // Demo leaderboard data
-    let leaderboardData = [
+    // Leaderboard data — load from localStorage or seed with defaults
+    var DEFAULT_LEADERBOARD = [
       { name: "Thomas J.", score: 95 },
       { name: "Eleanor R.", score: 90 },
       { name: "Theodore", score: 85 },
       { name: "Woodrow W.", score: 80 },
       { name: "Calvin C.", score: 75 }
     ];
+
+    let leaderboardData = (function() {
+      try {
+        var saved = localStorage.getItem('timelineLeaderboard');
+        if (saved) { return JSON.parse(saved); }
+      } catch (e) { /* localStorage unavailable */ }
+      return DEFAULT_LEADERBOARD.map(function(e) { return { name: e.name, score: e.score }; });
+    })();
 
     // ============================================
     // GAME FUNCTIONS
@@ -1299,19 +1352,46 @@
       SCORM.setScore(percentage);
       SCORM.complete(percentage);
 
-      // Load leaderboard
-      loadLeaderboard();
+      // Store percentage for name submission
+      gameState.percentage = percentage;
 
-      // Get player name for leaderboard
-      gameState.playerName = SCORM.getLearnerName();
-      if (gameState.playerName && gameState.playerName !== 'Learner') {
-        addToLeaderboard(gameState.playerName, percentage);
+      // Show name prompt, hide leaderboard until submitted
+      document.getElementById('namePrompt').classList.remove('hidden');
+      document.getElementById('leaderboardSection').classList.add('hidden');
+
+      // Pre-fill with SCORM name if available
+      var scormName = SCORM.getLearnerName();
+      if (scormName && scormName !== 'Learner') {
+        document.getElementById('playerNameInput').value = scormName;
       }
+
+      // Focus the name input
+      document.getElementById('playerNameInput').focus();
+    }
+
+    function submitName() {
+      var input = document.getElementById('playerNameInput');
+      var name = input.value.trim();
+      if (!name) {
+        input.focus();
+        return;
+      }
+      gameState.playerName = name;
+      addToLeaderboard(name, gameState.percentage);
+
+      // Hide prompt, show leaderboard
+      document.getElementById('namePrompt').classList.add('hidden');
+      document.getElementById('leaderboardSection').classList.remove('hidden');
+      loadLeaderboard();
     }
 
     function resetGame() {
       document.getElementById('endScreen').classList.remove('show');
       document.getElementById('startScreen').classList.remove('hidden');
+      // Reset name prompt for next play
+      document.getElementById('playerNameInput').value = '';
+      document.getElementById('namePrompt').classList.remove('hidden');
+      document.getElementById('leaderboardSection').classList.add('hidden');
       // Focus the start button
       document.querySelector('.start-btn').focus();
     }
@@ -1351,15 +1431,15 @@
       }).join('');
     }
 
+    function saveLeaderboard() {
+      try {
+        localStorage.setItem('timelineLeaderboard', JSON.stringify(leaderboardData));
+      } catch (e) { /* localStorage unavailable */ }
+    }
+
     function addToLeaderboard(name, score) {
-      const existing = leaderboardData.find(function(e) { return e.name === name; });
-      if (existing) {
-        if (score > existing.score) {
-          existing.score = score;
-        }
-      } else {
-        leaderboardData.push({ name: name, score: score });
-      }
+      leaderboardData.push({ name: name, score: score });
+      saveLeaderboard();
     }
 
     // ============================================
@@ -1370,6 +1450,11 @@
       document.getElementById('gameScreen').classList.add('hidden');
       document.getElementById('scoreBar').classList.add('hidden');
       document.getElementById('progressContainer').classList.add('hidden');
+
+      // Submit name on Enter key
+      document.getElementById('playerNameInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { submitName(); }
+      });
     });
   </script>
 </body>
